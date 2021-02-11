@@ -18,7 +18,17 @@ namespace Cleemy.Expenses.Test.Services.ExpenseServices
         {
             this.ExpenseRepository.Setup(s => s.Add(It.IsAny<Expense>())).Returns(Task.FromResult(new Expense()));
             this.UserRepository.Setup(s => s.Get(It.IsAny<int>())).Returns(Task.FromResult(new User() { Id = 1, Currency = "RUB", FirstName = "Romanova", SecondName = "Natasha" }));
-            this.ExpenseRepository.Setup(s => s.Find(It.IsAny<Expression<Func<Expense, bool>>>())).Returns(Task.FromResult(new List<Expense>()));
+            this.ExpenseRepository.Setup(s => s.Find(It.IsAny<Expression<Func<Expense, bool>>>())).Returns(Task.FromResult(new List<Expense>() { new Expense() 
+                {
+                    Id = 2,
+                    UserId = 1,
+                    ExpenseType = ExpenseType.Hotel,
+                    Amount = 20,
+                    Currency = "RUB",
+                    Comment = "setup",
+                    Date = DateTime.Today.AddMonths(-1)
+                }
+            } ));
         }
 
         [Fact]
@@ -51,6 +61,14 @@ namespace Cleemy.Expenses.Test.Services.ExpenseServices
             CreateExpenseParameter parameter = BuildCreateExpenseParameter(1, ExpenseType.Misc, 20, "USD", "not the currency of this user", DateTime.Today.AddMonths(-1));
 
             await Assert.ThrowsAsync<InvalidCurrencyException>(() => this.ExpenseService.CreateExpense(parameter));
+        }
+
+        [Fact]
+        public async Task CreateDuplicatedExpenseKO()
+        {
+            CreateExpenseParameter parameter = BuildCreateExpenseParameter(1, ExpenseType.Misc, 20, "RUB", "initial", DateTime.Today.AddMonths(-1));
+
+            await Assert.ThrowsAsync<DuplicateExpenseException>(() => this.ExpenseService.CreateExpense(parameter));
         }
 
         private static CreateExpenseParameter BuildCreateExpenseParameter(int userId, ExpenseType expenseType, decimal amount, string currency,string comment, DateTime date)
