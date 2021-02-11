@@ -23,5 +23,7 @@ namespace Cleemy.Expenses.Data.Expenses
         public string Currency { get; set; }
         [Required]
         public string Comment { get; set; }
+        [ForeignKey("User")]
+        public int UserId { get; set; }
     }
 }

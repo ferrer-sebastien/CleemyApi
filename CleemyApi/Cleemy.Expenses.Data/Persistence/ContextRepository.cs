@@ -45,7 +45,7 @@ namespace Cleemy.Expenses.Data.DataAccess
 
         public async Task<TEntity> Get(int id)
         {
-            return await context.Set<TEntity>().Where(e => e.Id == id).SingleOrDefaultAsync();
+            return await context.Set<TEntity>().FindAsync(id);
         }
 
         public async Task<List<TEntity>> Find(Expression<Func<TEntity, bool>> expression)

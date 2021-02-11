@@ -41,10 +41,12 @@ namespace Cleemy.Expenses.Business
         public async Task<ExpenseSummary> GetExpenseSummary(int expenseId)
         {
             Expense retrievedExpense = await expenseRepository.Get(expenseId);
+            User retrievedUser = await userRepository.Get(retrievedExpense.UserId);
+
             ExpenseSummary summary = new ExpenseSummary()
             {
                 Id = retrievedExpense.Id,
-                User = string.Format("{0} {1}", retrievedExpense.User.FirstName, retrievedExpense.User.SecondName),
+                User = string.Format("{0} {1}", retrievedUser.FirstName, retrievedUser.SecondName),
                 Date = retrievedExpense.Date,
                 ExpenseType = retrievedExpense.ExpenseType,
                 Amount = retrievedExpense.Amount,
